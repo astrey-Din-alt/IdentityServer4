@@ -1,12 +1,19 @@
 ﻿@page
 @using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    <h2>@ViewData["Title"]</h2>
+    <h3>@ViewData["Message"]</h3>
 }
 
-    <div class="text-center">
-        <h1 class="display-4">Welcome</h1>
+<div class="text-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <h3>User claims</h3>
         <p>
             <dl>
                 @foreach (var claim in User.Claims)
@@ -15,8 +22,19 @@
                     <dd>@claim.Value</dd>
 
                 }
-                <dt>id token</dt>
+                <dt>access token</dt>
+                <dd>@await ViewContext.HttpContext.GetTokenAsync("access_token")</dd>
+
+                <dt>Id token</dt>
                 <dd>@await ViewContext.HttpContext.GetTokenAsync("id_token")</dd>
+
+                <dt>refresh token</dt>
+                <dd>@await ViewContext.HttpContext.GetTokenAsync("refresh_token")</dd>
             </dl>
         </p>
-    </div>
+    }
+    else
+    {
+        <h1>Welcome!</h1>
+    }
+</div>
